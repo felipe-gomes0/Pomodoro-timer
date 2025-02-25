@@ -25,6 +25,7 @@ const newCycleFormValidationSchema = zod.object({
 export function Home() {
 
     const { activeCycle, CreateNewCycle, InterruptCurrentCycle } = useContext(CyclesContext);
+
     const newCycleForm = useForm <NewCycleFormData> ({
         resolver: zodResolver(newCycleFormValidationSchema),
         defaultValues: {
@@ -33,30 +34,33 @@ export function Home() {
         },
     })
     
-type NewCycleFormData = zod.infer<typeof newCycleFormValidationSchema>; 
+    type NewCycleFormData = zod.infer<typeof newCycleFormValidationSchema>; 
 
-const {  handleSubmit, watch } = newCycleForm;
+    const { handleSubmit, watch, reset } = newCycleForm;
 
+    function handleCreateNewCycle (data: NewCycleFormData) {
+        CreateNewCycle(data);
+        reset();
+    }
 
+    const task = watch('task');
+    const isSubmitDisabled = !task;    
 
-const task = watch('task');
-const isSubmitDisabled = !task;    
-
-return (
-    <HomeContainer>
-        <form onSubmit= {handleSubmit(CreateNewCycle)} action="">
-                <FormProvider {...newCycleForm}>
-                    <NewCycleForm />
-                </FormProvider>
-                <CountDown />
-            { activeCycle ? ( 
-                <StopCountDownButton type="button" onClick={InterruptCurrentCycle}> <HandPalm size={24} /> Parar</StopCountDownButton>
-            ) : (
-                <StartCountDownButton type="submit" disabled={isSubmitDisabled}> <Play size={24}/> Começar</StartCountDownButton>
-            )
-        }
-            
-        </form>
-        </HomeContainer>  
-)
+    return (
+        <HomeContainer>
+            <form onSubmit= {handleSubmit(handleCreateNewCycle)} action="">
+                    <FormProvider {...newCycleForm}>
+                        <NewCycleForm />
+                    </FormProvider>
+                    <CountDown />
+                { activeCycle ? ( 
+                    <StopCountDownButton type="button" onClick={InterruptCurrentCycle}> <HandPalm size={24} /> Parar</StopCountDownButton>
+                ) : (
+                    <StartCountDownButton type="submit" disabled={isSubmitDisabled}> <Play size={24}/> Começar</StartCountDownButton>
+                )
+            }
+                
+            </form>
+            </HomeContainer>  
+    )
 }

@@ -3,7 +3,7 @@ import { HistoryContainer , HistoryList, Status } from "./styles.ts"
 import { CyclesContext } from "../../contexts/CyclesContext.tsx"
 
 export function History() {
-    const { cycles} = useContext(CyclesContext);
+    const { cycles } = useContext(CyclesContext);
 
     return (
     <HistoryContainer>
