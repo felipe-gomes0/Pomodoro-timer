@@ -11,12 +11,8 @@ const newCycleFormValidationSchema = zod.object({
     minutesAmount: zod.number().int().min(5, { message: 'O ciclo mínimo é de 5 minutos.'}).max(60, { message: 'O ciclo máximo é de 60 minutos.'}),
 });
 
-// interface NewCycleFormData { 
-//     task: string;
-//     minutesAmount: number;
-// }
 
-type NewCycleFormData = zod.infer<typeof newCycleFormValidationSchema>; // é o mesmo que o de cima mas de forma automática 
+type NewCycleFormData = zod.infer<typeof newCycleFormValidationSchema>; 
 
 interface Cycle {
     id: string;
@@ -24,6 +20,7 @@ interface Cycle {
     minutesAmount: number;
     startDate: Date;
     interruptedDate?: Date;
+    finishedDate?: Date;
 }
 
 
@@ -35,26 +32,43 @@ export function Home() {
     const { register, handleSubmit, watch, reset } = useForm <NewCycleFormData> ({
         resolver: zodResolver(newCycleFormValidationSchema),
         defaultValues: {
-            task: '', // o reset vai retornar o valor padrão estabelecido no defaultValues
+            task: '', 
             minutesAmount: 0,
         }
     });  
 
     const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId);
 
+    const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0;
+
+
     useEffect(() => {
         let interval: number; 
 
         if (activeCycle) {
-            const interval = setInterval(() => {
-                setAmountSecondsPassed(differenceInSeconds(new Date(), activeCycle.startDate));
+            interval = setInterval(() => {
+                const secondsDifference = differenceInSeconds(new Date(), activeCycle.startDate);
+            
+            if (secondsDifference >= totalSeconds) {
+                setCycles(state => state.map((cycle) => {
+                    if(cycle.id === activeCycleId) {
+                        return {...cycle, finishedDate: new Date() } 
+                    } else {
+                        return cycle;
+                    }
+                }))
+                clearInterval(interval);
+            } else  {
+                setAmountSecondsPassed(secondsDifference);
+            }
+            
             }, 1000);
         }
 
         return () => {
             clearInterval(interval);
         }
-    }, [activeCycle]);
+    }, [activeCycle, totalSeconds, activeCycleId]);
 
     function handleCreateNewCycle(data: NewCycleFormData) {
 
@@ -76,7 +90,7 @@ export function Home() {
 
     function handleInterruptCycle() {
 
-        setCycles(cycles.map(cycle => {
+        setCycles(state => state.map((cycle) => {
             if(cycle.id === activeCycleId) {
                 return {...cycle, interruptedDate: new Date() } 
             } else {
@@ -92,7 +106,6 @@ export function Home() {
     
     
 
-    const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0;
     const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0;
 
     const minutesAmount = Math.floor(currentSeconds / 60);
