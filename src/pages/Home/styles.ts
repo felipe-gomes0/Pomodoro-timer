@@ -18,7 +18,6 @@ export const HomeContainer = styled.main`
 
 `;
 
-
 export const BaseCountDownButton = styled.button ` 
     outline: 0;
     width: 100%;
@@ -47,7 +46,7 @@ export const BaseCountDownButton = styled.button `
 `;
 
 export const StartCountDownButton = styled(BaseCountDownButton)`
-    background: ${props => props.theme['blue-500']};
+    background: ${props => props.theme['blue-300']};
     color: ${props => props.theme['gray-100']};
 
     &:not(:disabled):hover { 
