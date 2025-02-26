@@ -27,9 +27,9 @@ export function CountDown() {
     useEffect(() => {
         let interval: number; 
 
-        if (activeCycle) {
-            interval = setInterval(() => {
-                const secondsDifference = differenceInSeconds(new Date(), activeCycle.startDate);
+            if (activeCycle) {
+                interval = setInterval(() => {
+                const secondsDifference = differenceInSeconds(new Date(), new Date (activeCycle.startDate));
             
             if (secondsDifference >= totalSeconds) {
                 markCurrentCycleAsFinished();
