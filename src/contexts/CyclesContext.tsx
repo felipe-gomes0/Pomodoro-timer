@@ -65,7 +65,6 @@ const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId);
     
     function markCurrentCycleAsFinished() {
         dispatch(markCurrentCycleAsFinished());
-
     }
 
     function CreateNewCycle (data: CreateCycleData) {
@@ -79,14 +78,11 @@ const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId);
         }   
         
         dispatch(addNewCycleAction(newCycle));
-
         setAmountSecondsPassed(0);
     }
     
     function InterruptCurrentCycle() {
         dispatch(interruptCurrentCycleAction());
-  
-    
     }
 
     return (
